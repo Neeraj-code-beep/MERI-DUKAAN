@@ -3,7 +3,7 @@
  * Offline-First Caching for 100% Aeroplane Mode Support
  */
 
-const CACHE_NAME = "meri-dukaan-v1";
+const CACHE_NAME = "meri-dukaan-v2";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
@@ -14,7 +14,8 @@ const ASSETS_TO_CACHE = [
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/icon-maskable.png",
-  "./icons/favicon.png"
+  "./icons/favicon.png",
+  "./tests.html"
 ];
 
 // Install Event: cache static shell assets
