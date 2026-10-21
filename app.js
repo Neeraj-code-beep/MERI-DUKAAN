@@ -859,13 +859,55 @@ async function generateShareOrderList() {
   text += "_Meri Dukaan ऐप द्वारा सुझाई गई ऑर्डर सूची_";
 
   elements.txtShareOrderContent.value = text;
+
+  // Load saved distributor phone
+  const inpPhone = document.getElementById("inp-distributor-phone");
+  if (inpPhone) {
+    const savedPhone = await getSetting("distributorPhone", "");
+    inpPhone.value = savedPhone;
+  }
+
+  // Check Web Share API support
+  const btnNative = document.getElementById("btn-native-share");
+  if (btnNative) {
+    btnNative.style.display = navigator.share ? "block" : "none";
+  }
+
   elements.modalShare.classList.add("active");
 }
 
-function shareViaWhatsApp() {
+async function shareViaWhatsApp() {
   const text = elements.txtShareOrderContent.value;
   const encoded = encodeURIComponent(text);
-  window.open("https://api.whatsapp.com/send?text=" + encoded, "_blank");
+  const inpPhone = document.getElementById("inp-distributor-phone");
+  const phone = inpPhone ? inpPhone.value.replace(/\D/g, "") : "";
+
+  if (phone) {
+    await setSetting("distributorPhone", inpPhone.value.trim());
+    const fullPhone = phone.length === 10 ? "91" + phone : phone;
+    window.open("https://api.whatsapp.com/send?phone=" + fullPhone + "&text=" + encoded, "_blank");
+  } else {
+    window.open("https://api.whatsapp.com/send?text=" + encoded, "_blank");
+  }
+}
+
+async function shareViaNative() {
+  const text = elements.txtShareOrderContent.value;
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: "मेरी दुकान - ऑर्डर सूची",
+        text: text
+      });
+      showToast("ऑर्डर सूची शेयर हो गई!");
+    } catch (err) {
+      if (err.name !== "AbortError") {
+        fallbackCopy(text);
+      }
+    }
+  } else {
+    copyOrderText();
+  }
 }
 
 function copyOrderText() {
@@ -1080,8 +1122,16 @@ function setupEventListeners() {
   if (elements.btnSendWhatsapp) {
     elements.btnSendWhatsapp.addEventListener("click", shareViaWhatsApp);
   }
-  if (elements.btnCopyOrder) {
+    if (elements.btnCopyOrder) {
     elements.btnCopyOrder.addEventListener("click", copyOrderText);
+  }
+  const btnCopyAlt = document.getElementById("btn-copy-order-text");
+  if (btnCopyAlt) {
+    btnCopyAlt.addEventListener("click", copyOrderText);
+  }
+  const btnNative = document.getElementById("btn-native-share");
+  if (btnNative) {
+    btnNative.addEventListener("click", shareViaNative);
   }
 
   // Demo Data loader button

@@ -453,11 +453,18 @@
           यह सूची कम स्टॉक के आधार पर तैयार की गई है:
         </div>
 
+                <div class="form-group" style="margin-bottom:10px;">
+          <label class="form-label" style="font-size:0.8rem;">डीलर का फोन नंबर (Distributor Phone - Optional):</label>
+          <input type="tel" class="form-input" id="inp-distributor-phone" placeholder="उदा. 9876543210 (10-digit number)">
+        </div>
         <textarea id="txt-share-order-content" rows="9" class="form-input" style="font-family:monospace; font-size:0.85rem; line-height:1.4;" readonly></textarea>
 
         <div style="margin-top:16px; display:flex; flex-direction:column; gap:8px;">
           <button class="btn btn-accent btn-block" id="btn-send-whatsapp">
             <span style="font-size:1.1rem;">💬</span> WhatsApp पर भेजें
+          </button>
+          <button class="btn btn-primary btn-block" id="btn-native-share" style="display:none;">
+            <span style="font-size:1.1rem;">📲</span> अन्य ऐप्स पर शेयर करें (Share)
           </button>
           <button class="btn btn-outline btn-block" id="btn-copy-order-text">
             📋 कॉपी करें (Copy to Clipboard)
