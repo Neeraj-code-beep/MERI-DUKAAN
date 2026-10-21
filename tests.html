@@ -43,7 +43,7 @@
     <h1>मेरी दुकान - Section 11 Acceptance Criteria Tests</h1>
     <p class="subtitle">Automated verification of non-negotiable P0 requirements & P1 features from Hackathon Specification.</p>
     <div class="summary-box">
-      <div class="stat-pill stat-total" id="stat-total">Total: 14 Tests</div>
+      <div class="stat-pill stat-total" id="stat-total">Total: 15 Tests</div>
       <div class="stat-pill stat-pass" id="stat-pass">Passed: 0</div>
       <div class="stat-pill stat-fail" id="stat-fail">Failed: 0</div>
     </div>
@@ -346,7 +346,50 @@
           }
           return `Verified backup schema: ${parsed.products.length} products, ${parsed.movements.length} movement records`;
         }
+      },
+      {
+        id: 15,
+        name: "15. Expiry Date & Expiring-Soon Alert Logic",
+        desc: "Identifies expired items and goods expiring within 30 days for chemist/grocery",
+        fn: async () => {
+          const daysFromNow = (d) => {
+            const dt = new Date(Date.now() + d * 86400000);
+            return dt.toISOString().split("T")[0];
+          };
+
+          const p1 = await addProduct({
+            name: "Test Paracetamol 500mg",
+            quantity: 20,
+            unit: "pkt",
+            minimumStock: 5,
+            expiryDate: daysFromNow(15) // expiring in 15 days
+          });
+
+          const p2 = await addProduct({
+            name: "Test Expired Cough Syrup",
+            quantity: 5,
+            unit: "pc",
+            minimumStock: 2,
+            expiryDate: daysFromNow(-5) // expired 5 days ago
+          });
+
+          const { getExpiringProducts } = await import("./db.js");
+          const expiring = await getExpiringProducts(30);
+
+          const foundP1 = expiring.find(p => p.id === p1.id);
+          const foundP2 = expiring.find(p => p.id === p2.id);
+
+          if (!foundP1 || foundP1.expiryStatus !== "expiring_soon") {
+            throw new Error("Paracetamol (15d) not flagged as expiring_soon");
+          }
+          if (!foundP2 || foundP2.expiryStatus !== "expired") {
+            throw new Error("Cough syrup (-5d) not flagged as expired");
+          }
+
+          return `Flagged "${foundP1.name}" (15 days left) and "${foundP2.name}" (expired 5 days ago)`;
+        }
       }
+
 
     ];
 

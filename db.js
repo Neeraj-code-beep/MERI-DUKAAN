@@ -89,6 +89,7 @@ export async function addProduct(data) {
       unit: (data.unit || "pkt").trim(),
       minimumStock: minStock,
       costPrice: costPrice,
+      expiryDate: data.expiryDate ? data.expiryDate.trim() : null,
       createdAt: now,
       lastSaleAt: data.lastSaleAt || null
     };
@@ -365,6 +366,48 @@ export async function getLowStockProducts() {
  * - Products that have NEVER sold are labelled separately from products that sold previously but stopped.
  * - Products added WITHIN the period are NOT flagged.
  */
+
+/**
+ * Expiry Tracking (Chemist & Perishable Groceries)
+ * Returns items that are either already expired or expiring within daysThreshold (default 30 days)
+ */
+export async function getExpiringProducts(daysThreshold = 30) {
+  const products = await getAllProducts();
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const nowMs = now.getTime();
+  const thresholdMs = nowMs + daysThreshold * 24 * 60 * 60 * 1000;
+
+  const expiring = [];
+
+  for (const product of products) {
+    if (!product.expiryDate) continue;
+    const expDate = new Date(product.expiryDate);
+    if (isNaN(expDate.getTime())) continue;
+    expDate.setHours(0, 0, 0, 0);
+    const expMs = expDate.getTime();
+
+    if (expMs < nowMs) {
+      const daysAgo = Math.max(1, Math.round((nowMs - expMs) / (24 * 60 * 60 * 1000)));
+      expiring.push({
+        ...product,
+        expiryStatus: "expired",
+        daysExpired: daysAgo
+      });
+    } else if (expMs <= thresholdMs) {
+      const daysLeft = Math.round((expMs - nowMs) / (24 * 60 * 60 * 1000));
+      expiring.push({
+        ...product,
+        expiryStatus: "expiring_soon",
+        daysLeft: daysLeft
+      });
+    }
+  }
+
+  expiring.sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
+  return expiring;
+}
+
 export async function getNotMovingProducts(inactivityDays = 30) {
   const products = await getAllProducts();
   const now = Date.now();
@@ -544,6 +587,7 @@ export async function loadDemoData() {
       unit: "pkt",
       minimumStock: 4,
       costPrice: 260,
+      expiryDate: new Date(Date.now() + 10 * 86400000).toISOString().split("T")[0],
       createdAt: daysAgo(30),
       lastSaleAt: daysAgo(0, 5)
     },
@@ -554,6 +598,7 @@ export async function loadDemoData() {
       unit: "pc",
       minimumStock: 8,
       costPrice: 32,
+      expiryDate: new Date(Date.now() + 200 * 86400000).toISOString().split("T")[0],
       createdAt: daysAgo(50),
       lastSaleAt: daysAgo(1)
     },
@@ -585,6 +630,7 @@ export async function loadDemoData() {
       unit: "pc",
       minimumStock: 4,
       costPrice: 98,
+      expiryDate: new Date(Date.now() + 18 * 86400000).toISOString().split("T")[0],
       createdAt: daysAgo(70),
       lastSaleAt: daysAgo(45) // Sold 45 days ago!
     },

@@ -15,7 +15,7 @@ import {
   getAllMovements,
   getLowStockProducts,
   getNotMovingProducts,
-  calculateTiedUpCapital,
+  calculateTiedUpCapital,\n  getExpiringProducts,
   getSetting,
   setSetting,
   loadDemoData,
@@ -233,7 +233,7 @@ function cacheElements() {
   elements.inpAddQty = document.getElementById("inp-add-qty");
   elements.inpAddUnit = document.getElementById("inp-add-unit");
   elements.inpAddMin = document.getElementById("inp-add-min");
-  elements.inpAddCost = document.getElementById("inp-add-cost");
+  elements.inpAddCost = document.getElementById("inp-add-cost");\n  elements.inpAddExpiry = document.getElementById("inp-add-expiry");
   elements.unitPillsAdd = document.querySelectorAll("#unit-pills-add .pill");
 
   elements.modalRestock = document.getElementById("modal-restock");
@@ -323,6 +323,14 @@ function renderStockList(products) {
     filtered = filtered.filter((p) => p.quantity > p.minimumStock);
   } else if (currentStockFilter === "out") {
     filtered = filtered.filter((p) => p.quantity <= 0);
+  } else if (currentStockFilter === "expiry") {
+    const nowMs = new Date().setHours(0,0,0,0);
+    const limitMs = nowMs + 30 * 86400000;
+    filtered = filtered.filter((p) => {
+      if (!p.expiryDate) return false;
+      const expMs = new Date(p.expiryDate).getTime();
+      return expMs <= limitMs;
+    });
   }
 
   // Apply sorting
@@ -353,9 +361,29 @@ function renderStockList(products) {
   elements.listAllStock.innerHTML = filtered
     .map((prod) => {
       const isLow = prod.quantity <= prod.minimumStock;
-      const badgeHtml = isLow
+      let badgeHtml = isLow
         ? `<span class="badge badge-danger">कम स्टॉक / Low Stock</span>`
         : `<span class="badge badge-success">उपलब्ध / In Stock</span>`;
+
+      // Check Expiry status
+      let expiryLabel = "";
+      if (prod.expiryDate) {
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        const expDate = new Date(prod.expiryDate);
+        expDate.setHours(0,0,0,0);
+        const diffDays = Math.round((expDate - today) / 86400000);
+
+        if (diffDays < 0) {
+          badgeHtml = `<span class="badge badge-danger">⚠️ एक्सपायर हो चुका!</span>`;
+          expiryLabel = `<span class="cost-label text-danger font-bold">एक्सपायरी: ${expDate.toLocaleDateString("hi-IN")} (${Math.abs(diffDays)} दिन पहले)</span>`;
+        } else if (diffDays <= 30) {
+          badgeHtml = `<span class="badge badge-warning">⏳ ${diffDays} दिन में एक्सपायर</span>`;
+          expiryLabel = `<span class="cost-label text-warning font-bold">एक्सपायरी: ${expDate.toLocaleDateString("hi-IN")}</span>`;
+        } else {
+          expiryLabel = `<span class="cost-label">एक्सपायरी: ${expDate.toLocaleDateString("hi-IN")}</span>`;
+        }
+      }
 
       return `
         <div class="product-card ${isLow ? "is-low" : ""}" data-id="${prod.id}">
@@ -371,6 +399,7 @@ function renderStockList(products) {
             <div class="threshold-display">
               <span class="meta-label">न्यूनतम: ${prod.minimumStock} ${escapeHTML(prod.unit)}</span>
               ${prod.costPrice ? `<span class="cost-label">खरीद: ₹${prod.costPrice}</span>` : ""}
+              ${expiryLabel}
             </div>
           </div>
           <div class="card-actions-row">
@@ -1040,6 +1069,25 @@ function setupEventListeners() {
     });
   }
 
+  // Quick expiry pills (+1 month, +3 months, etc.)
+  document.querySelectorAll(".pill-expiry-quick").forEach((pill) => {
+    pill.addEventListener("click", () => {
+      const addMonths = parseInt(pill.dataset.addMonths, 10);
+      const d = new Date();
+      d.setMonth(d.getMonth() + addMonths);
+      if (elements.inpAddExpiry) {
+        elements.inpAddExpiry.value = d.toISOString().split("T")[0];
+      }
+    });
+  });
+
+  const btnClearExpiry = document.getElementById("btn-clear-expiry");
+  if (btnClearExpiry && elements.inpAddExpiry) {
+    btnClearExpiry.addEventListener("click", () => {
+      elements.inpAddExpiry.value = "";
+    });
+  }
+
   // Search filters
   if (elements.searchStock) {
     elements.searchStock.addEventListener("input", async () => {
@@ -1101,12 +1149,15 @@ function setupEventListeners() {
         return;
       }
 
+      const expiryDate = elements.inpAddExpiry && elements.inpAddExpiry.value ? elements.inpAddExpiry.value : null;
+
       await addProduct({
         name,
         quantity: qty,
         unit,
         minimumStock: minStock,
-        costPrice
+        costPrice,
+        expiryDate
       });
 
       closeAllModals();
