@@ -831,33 +831,43 @@ function showUndoSnackbar(product, movement) {
 
 // --- MODAL HANDLERS ---
 function closeAllModals() {
-  document.querySelectorAll(".modal").forEach((m) => m.classList.remove("active"));
+  document.querySelectorAll(".modal-overlay, .modal").forEach((m) => {
+    m.classList.remove("active");
+    m.classList.remove("open");
+    m.style.display = "none";
+  });
 }
+window.closeAllModals = closeAllModals;
 
 function openAddModal() {
   closeAllModals();
+  if (elements.formAddProduct) elements.formAddProduct.reset();
+  if (elements.unitPillsAdd) {
+    elements.unitPillsAdd.forEach((p) => p.classList.remove("active"));
+  }
+  const defaultPill = document.querySelector("#unit-pills-add [data-unit='pkt']");
+  if (defaultPill) defaultPill.classList.add("active");
+  if (elements.inpAddUnit) elements.inpAddUnit.value = "pkt";
+
   const modal = document.getElementById("modal-add-product");
   if (modal) {
     modal.classList.add("active");
     modal.classList.add("open");
     modal.style.display = "flex";
   }
-  closeAllModals();
-  if (elements.formAddProduct) elements.formAddProduct.reset();
-  // Select default unit (pkt)
-  elements.unitPillsAdd.forEach((p) => p.classList.remove("active"));
-  const defaultPill = document.querySelector("#unit-pills-add [data-unit=pkt]");
-  if (defaultPill) defaultPill.classList.add("active");
-  if (elements.inpAddUnit) elements.inpAddUnit.value = "pkt";
-
-  elements.modalAddProduct.classList.add("active");
   setTimeout(() => {
     if (elements.inpAddName) elements.inpAddName.focus();
   }, 100);
 }
+window.openAddModal = openAddModal;
 
 function openRestockModal(product) {
   closeAllModals();
+  const modal = document.getElementById("modal-restock");
+  if (modal) {
+    modal.classList.add("active", "open");
+    modal.style.display = "flex";
+  }
   elements.restockProdId.value = product.id;
   elements.restockProdName.textContent = product.name;
   elements.restockCurrentQty.textContent = product.quantity + " " + product.unit;
@@ -870,6 +880,11 @@ function openRestockModal(product) {
 
 function openCorrectModal(product) {
   closeAllModals();
+  const modal = document.getElementById("modal-correct");
+  if (modal) {
+    modal.classList.add("active", "open");
+    modal.style.display = "flex";
+  }
   elements.correctProdId.value = product.id;
   elements.correctProdName.textContent = product.name;
   elements.correctCurrentQty.textContent = product.quantity + " " + product.unit;
@@ -1387,3 +1402,7 @@ if (document.readyState === "loading") {
   init();
 }
 window.openAddModal = openAddModal;
+
+window.openRestockModal = openRestockModal;
+
+window.openCorrectModal = openCorrectModal;
