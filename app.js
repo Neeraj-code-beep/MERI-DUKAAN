@@ -878,7 +878,7 @@ async function generateShareOrderList() {
     btnNative.style.display = navigator.share ? "block" : "none";
   }
 
-  elements.modalShare.classList.add("active");
+  elements.modalShare.classList.add("active");\n  elements.modalShare.classList.add("open");\n  elements.modalShare.style.display = "flex";
 }
 
 async function shareViaWhatsApp() {

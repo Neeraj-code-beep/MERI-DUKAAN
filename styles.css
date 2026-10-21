@@ -508,7 +508,7 @@ body.expanded-mode .app-container {
 .fab-add {
   position: fixed;
   bottom: calc(var(--nav-height) + 16px);
-  right: 16px;
+  right: max(16px, calc(50vw - 340px + 16px));
   background-color: var(--primary);
   color: #ffffff;
   border: none;
@@ -533,10 +533,10 @@ body.expanded-mode .app-container {
 .bottom-nav {
   position: fixed;
   bottom: 0;
-  left: 0;
-  right: 0;
-  max-width: 460px;
-  margin: 0 auto;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 680px;
   height: var(--nav-height);
   background-color: var(--surface);
   border-top: 1px solid var(--border);
@@ -545,6 +545,7 @@ body.expanded-mode .app-container {
   justify-content: space-around;
   z-index: 50;
   box-shadow: var(--shadow-up);
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 body.expanded-mode .bottom-nav {
@@ -605,10 +606,10 @@ body.expanded-mode .bottom-nav {
 .undo-toast {
   position: fixed;
   bottom: calc(var(--nav-height) + 14px);
-  left: 14px;
-  right: 14px;
-  max-width: 432px;
-  margin: 0 auto;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 28px);
+  max-width: 640px;
   background-color: #1e293b;
   color: #ffffff;
   padding: 12px 14px;
@@ -655,28 +656,34 @@ body.expanded-mode .undo-toast {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.55);
+  background-color: rgba(0, 0, 0, 0.6);
   display: none;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
-  z-index: 100;
-  backdrop-filter: blur(2px);
+  z-index: 200;
+  backdrop-filter: blur(3px);
+  padding: 16px;
 }
 
 .modal-overlay.open, .modal-overlay.active {
-  display: flex;
+  display: flex !important;
 }
 
 .modal-sheet {
   background: var(--surface);
   width: 100%;
-  max-width: 460px;
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  padding: 18px 20px 24px;
+  max-width: 520px;
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: var(--shadow-lg);
-  animation: sheetUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+  animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes popIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 @keyframes sheetUp {

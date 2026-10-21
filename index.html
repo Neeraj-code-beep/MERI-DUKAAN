@@ -315,7 +315,7 @@
       <div class="modal-sheet">
         <div class="modal-header">
           <h3 class="modal-title">➕ नया सामान जोड़ें (Add Stock)</h3>
-          <button class="modal-close" data-close-modal="modal-add-product">✕</button>
+          <button class="modal-close" onclick="window.closeAllModals()" data-close-modal="modal-add-product" onclick="window.closeAllModals()">✕</button>
         </div>
 
         <form id="form-add-product" autocomplete="off">
@@ -371,7 +371,7 @@
           </div>
 
           <div style="margin-top:20px; display:flex; gap:10px;">
-            <button type="button" class="btn btn-outline" style="flex:1;" data-close-modal="modal-add-product">रद्द करें</button>
+            <button type="button" class="btn btn-outline" style="flex:1;" data-close-modal="modal-add-product" onclick="window.closeAllModals()">रद्द करें</button>
             <button type="submit" class="btn btn-primary" style="flex:2;" id="btn-submit-add">✅ सामान सहेजें (Save)</button>
           </div>
         </form>
@@ -383,7 +383,7 @@
       <div class="modal-sheet">
         <div class="modal-header">
           <h3 class="modal-title">📥 माल आया (Stock Received)</h3>
-          <button class="modal-close" data-close-modal="modal-restock">✕</button>
+          <button class="modal-close" onclick="window.closeAllModals()" data-close-modal="modal-restock" onclick="window.closeAllModals()">✕</button>
         </div>
 
         <form id="form-restock">
@@ -406,7 +406,7 @@
           </div>
 
           <div style="margin-top:20px; display:flex; gap:10px;">
-            <button type="button" class="btn btn-outline" style="flex:1;" data-close-modal="modal-restock">रद्द करें</button>
+            <button type="button" class="btn btn-outline" style="flex:1;" data-close-modal="modal-restock" onclick="window.closeAllModals()">रद्द करें</button>
             <button type="submit" class="btn btn-primary" style="flex:2;" id="btn-submit-restock">📥 स्टॉक जोड़ें (Save)</button>
           </div>
         </form>
@@ -418,7 +418,7 @@
       <div class="modal-sheet">
         <div class="modal-header">
           <h3 class="modal-title">✏️ स्टॉक सुधारें (Correct Stock)</h3>
-          <button class="modal-close" data-close-modal="modal-correct">✕</button>
+          <button class="modal-close" onclick="window.closeAllModals()" data-close-modal="modal-correct" onclick="window.closeAllModals()">✕</button>
         </div>
 
         <form id="form-correct">
@@ -446,7 +446,7 @@
           </div>
 
           <div style="margin-top:20px; display:flex; gap:10px;">
-            <button type="button" class="btn btn-outline" style="flex:1;" data-close-modal="modal-correct">रद्द करें</button>
+            <button type="button" class="btn btn-outline" style="flex:1;" data-close-modal="modal-correct" onclick="window.closeAllModals()">रद्द करें</button>
             <button type="submit" class="btn btn-primary" style="flex:2;" id="btn-submit-correct">💾 सुधार सहेजें (Update)</button>
           </div>
         </form>
@@ -458,7 +458,7 @@
       <div class="modal-sheet">
         <div class="modal-header">
           <h3 class="modal-title">📲 डीलर को ऑर्डर सूची भेजें</h3>
-          <button class="modal-close" data-close-modal="modal-share">✕</button>
+          <button class="modal-close" onclick="window.closeAllModals()" data-close-modal="modal-share" onclick="window.closeAllModals()">✕</button>
         </div>
 
         <div style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:10px;">
