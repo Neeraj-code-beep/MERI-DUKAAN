@@ -226,6 +226,7 @@ async function init() {
   setupEventListeners();
   setupNetworkMonitoring();
   registerServiceWorker();
+  setupPWAInstallPrompt();
 
   await refreshAllViews();
 }
@@ -367,6 +368,97 @@ function renderQuickSaleList(products) {
   });
 }
 
+
+// --- OFFLINE WEB AUDIO FEEDBACK (Synthesized Chimes) ---
+let audioCtx = null;
+function getAudioContext() {
+  if (!audioCtx && (window.AudioContext || window.webkitAudioContext)) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx && audioCtx.state === "suspended") {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+function playSaleChime() {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const osc1 = ctx.createOscillator();
+    const osc2 = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc1.type = "sine";
+    osc1.frequency.setValueAtTime(587.33, now); // D5
+    osc1.frequency.setValueAtTime(880, now + 0.08); // A5
+    osc2.type = "triangle";
+    osc2.frequency.setValueAtTime(880, now);
+    osc2.frequency.setValueAtTime(1174.66, now + 0.08); // D6
+    gain.gain.setValueAtTime(0.12, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+    osc1.connect(gain);
+    osc2.connect(gain);
+    gain.connect(ctx.destination);
+    osc1.start(now);
+    osc2.start(now);
+    osc1.stop(now + 0.35);
+    osc2.stop(now + 0.35);
+  } catch (e) {}
+}
+
+function playUndoChime() {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(659.25, now); // E5
+    osc.frequency.setValueAtTime(440, now + 0.1); // A4
+    gain.gain.setValueAtTime(0.1, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.3);
+  } catch (e) {}
+}
+
+// --- PWA INSTALL PROMPT MANAGEMENT ---
+let deferredInstallPrompt = null;
+function setupPWAInstallPrompt() {
+  const banner = document.getElementById("pwa-install-banner");
+  const btnInstall = document.getElementById("btn-pwa-install");
+  const btnDismiss = document.getElementById("btn-pwa-dismiss");
+
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    if (banner) banner.style.display = "flex";
+  });
+
+  if (btnInstall) {
+    btnInstall.addEventListener("click", async () => {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      const choice = await deferredInstallPrompt.userChoice;
+      if (choice.outcome === "accepted") {
+        console.log("[PWA] User accepted install");
+      }
+      deferredInstallPrompt = null;
+      if (banner) banner.style.display = "none";
+    });
+  }
+
+  if (btnDismiss && banner) {
+    btnDismiss.addEventListener("click", () => {
+      banner.style.display = "none";
+    });
+  }
+}
+
 // --- RAPID SALE HANDLER (P0: 2-TAP SALE & ATOMIC TRANSACTION) ---
 async function handleQuickSale(productId, qtyToSell, buttonEl) {
   if (isProcessingSale) return;
@@ -380,6 +472,7 @@ async function handleQuickSale(productId, qtyToSell, buttonEl) {
 
     // Haptic feedback if supported
     if (navigator.vibrate) navigator.vibrate(40);
+    playSaleChime();
 
     // Show undo snackbar
     showUndoSnackbar(result.product, result.movement);
@@ -850,6 +943,7 @@ function setupEventListeners() {
     elements.btnUndoAction.addEventListener("click", async () => {
       try {
         await undoLastSale(lastSaleMovement ? lastSaleMovement.id : null);
+        playUndoChime();
         if (elements.undoSnackbar) elements.undoSnackbar.classList.remove("active");
         showToast(t("undoSuccess"));
         await refreshAllViews();

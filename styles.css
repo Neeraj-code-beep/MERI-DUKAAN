@@ -873,3 +873,65 @@ body.expanded-mode .undo-toast {
 .movement-badge.restock { background: #dcfce7; color: #166534; }
 .movement-badge.adjustment { background: #e0f2fe; color: #075985; }
 .movement-badge.undone { text-decoration: line-through; opacity: 0.5; }
+/* PWA Install Banner */
+.install-banner {
+  background: linear-gradient(135deg, #0d5c3a, #13774b);
+  color: #ffffff;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  border-bottom: 2px solid var(--accent);
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.install-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.install-icon {
+  font-size: 1.5rem;
+}
+
+.install-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.install-text strong {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.install-text span {
+  font-size: 0.72rem;
+  opacity: 0.9;
+}
+
+.install-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-banner-close {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.7);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+}
+.btn-banner-close:hover {
+  color: #ffffff;
+}
