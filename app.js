@@ -278,6 +278,7 @@ async function init() {
 
   updateLanguageUI();
   setupEventListeners();
+  setupKeyboardShortcuts();
   setupNetworkMonitoring();
   registerServiceWorker();
   setupPWAInstallPrompt();
@@ -958,6 +959,54 @@ function showToast(msg) {
 }
 
 // --- SETUP EVENT LISTENERS ---
+
+// --- KEYBOARD SHORTCUTS FOR DESKTOP / COUNTER USE ---
+function setupKeyboardShortcuts() {
+  window.addEventListener("keydown", (e) => {
+    // If typing in an input or textarea, only handle Escape
+    const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : "";
+    const isInput = activeTag === "input" || activeTag === "textarea" || activeTag === "select";
+
+    if (e.key === "Escape") {
+      closeAllModals();
+      return;
+    }
+
+    if (isInput) return;
+
+    // Hotkeys outside input
+    if (e.key === "1") {
+      switchView("view-stock");
+    } else if (e.key === "2") {
+      switchView("view-quick-sale");
+    } else if (e.key === "3") {
+      switchView("view-low-stock");
+    } else if (e.key === "4") {
+      switchView("view-not-moving");
+    } else if (e.key === "5") {
+      switchView("view-settings");
+    } else if (e.key === "+" || e.key.toLowerCase() === "a") {
+      e.preventDefault();
+      openAddModal();
+    } else if (e.key === "/" || (e.ctrlKey && e.key.toLowerCase() === "k")) {
+      e.preventDefault();
+      const currentSearch = currentView === "view-quick-sale" ? elements.searchSale : elements.searchStock;
+      if (currentSearch) {
+        currentSearch.focus();
+        currentSearch.select();
+      }
+    } else if (e.key.toLowerCase() === "z" || e.key.toLowerCase() === "u") {
+      if (lastSaleMovement && !lastSaleMovement.undone) {
+        undoLastSale(lastSaleMovement.id).then(() => {
+          playUndoChime();
+          showToast(t("undoSuccess"));
+          refreshAllViews();
+        }).catch((err) => showToast(err.message));
+      }
+    }
+  });
+}
+
 function setupEventListeners() {
   // Navigation tabs
   elements.navTabs.forEach((tab) => {
