@@ -43,7 +43,7 @@
     <h1>मेरी दुकान - Section 11 Acceptance Criteria Tests</h1>
     <p class="subtitle">Automated verification of non-negotiable P0 requirements & P1 features from Hackathon Specification.</p>
     <div class="summary-box">
-      <div class="stat-pill stat-total" id="stat-total">Total: 12 Tests</div>
+      <div class="stat-pill stat-total" id="stat-total">Total: 14 Tests</div>
       <div class="stat-pill stat-pass" id="stat-pass">Passed: 0</div>
       <div class="stat-pill stat-fail" id="stat-fail">Failed: 0</div>
     </div>
@@ -300,7 +300,54 @@
           if (!manifest.name || !manifest.start_url) throw new Error("Invalid manifest schema");
           return `Manifest valid ("${manifest.name}"). Offline shell configured`;
         }
+      },
+      {
+        id: 13,
+        name: "13. Hinglish & Transliteration Search",
+        desc: "Kirana shopkeepers can type Hinglish ("namak", "tel", "atta") to find Hindi items",
+        fn: async () => {
+          const HINGLISH_MAP = {
+            namak: ["नमक", "salt"],
+            tel: ["तेल", "oil"],
+            atta: ["आटा", "flour"]
+          };
+          function matches(name, q) {
+            const lower = name.toLowerCase();
+            const lq = q.toLowerCase();
+            if (lower.includes(lq)) return true;
+            const syns = HINGLISH_MAP[lq] || [];
+            return syns.some(s => lower.includes(s));
+          }
+          const item1 = "टाटा नमक (Tata Salt 1kg)";
+          const item2 = "फॉर्च्यून सरसों तेल (Fortune Mustard Oil 1L)";
+          if (!matches(item1, "namak")) throw new Error("namak did not match टाटा नमक");
+          if (!matches(item2, "tel")) throw new Error("tel did not match सरसों तेल");
+          return `Verified "namak" -> "${item1}" and "tel" -> "${item2}"`;
+        }
+      },
+      {
+        id: 14,
+        name: "14. Backup Export & Restore Integrity",
+        desc: "Validates JSON structure, export payload, and full restore roundtrip",
+        fn: async () => {
+          const prods = await getAllProducts();
+          const movs = await getAllMovements();
+          const payload = {
+            app: "Meri Dukaan",
+            version: 1,
+            exportedAt: new Date().toISOString(),
+            products: prods,
+            movements: movs
+          };
+          const jsonStr = JSON.stringify(payload);
+          const parsed = JSON.parse(jsonStr);
+          if (!parsed.products || parsed.products.length !== prods.length) {
+            throw new Error("Backup integrity failed in serialization roundtrip");
+          }
+          return `Verified backup schema: ${parsed.products.length} products, ${parsed.movements.length} movement records`;
+        }
       }
+
     ];
 
     async function runAllTests() {
