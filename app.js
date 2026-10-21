@@ -829,6 +829,15 @@ function showUndoSnackbar(product, movement) {
   }, 9000);
 }
 
+function dismissUndoSnackbar() {
+  if (undoTimer) clearTimeout(undoTimer);
+  if (elements.undoSnackbar) {
+    elements.undoSnackbar.classList.remove("active");
+    elements.undoSnackbar.classList.remove("show");
+  }
+}
+window.dismissUndoSnackbar = dismissUndoSnackbar;
+
 // --- MODAL HANDLERS ---
 function closeAllModals() {
   document.querySelectorAll(".modal-overlay, .modal").forEach((m) => {
@@ -1228,6 +1237,12 @@ function setupEventListeners() {
       showToast(t("correctSuccess"));
       await refreshAllViews();
     });
+  }
+
+  // Dismiss cut button in snackbar
+  const btnToastDismiss = document.getElementById("btn-toast-dismiss");
+  if (btnToastDismiss) {
+    btnToastDismiss.addEventListener("click", dismissUndoSnackbar);
   }
 
   // Undo button in snackbar

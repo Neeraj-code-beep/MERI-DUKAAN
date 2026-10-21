@@ -652,6 +652,34 @@ body.expanded-mode .undo-toast {
   background-color: var(--accent-hover);
 }
 
+.undo-toast-close {
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  padding: 0;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.undo-toast-close:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+.undo-toast-close:active {
+  transform: scale(0.9);
+  background: rgba(255, 255, 255, 0.45);
+}
+
 /* Modals */
 .modal-overlay {
   position: fixed;

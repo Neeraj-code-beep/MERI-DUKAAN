@@ -3,7 +3,7 @@
  * Offline-First Caching for 100% Aeroplane Mode Support
  */
 
-const CACHE_NAME = "meri-dukaan-v8";
+const CACHE_NAME = "meri-dukaan-v9";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",

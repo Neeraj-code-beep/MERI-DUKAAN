@@ -15,7 +15,7 @@
   <link rel="icon" type="image/png" href="icons/favicon.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   
-  <link rel="stylesheet" href="styles.css?v=8">
+  <link rel="stylesheet" href="styles.css?v=9">
   <script>
     window.closeAllModals = function() {
       document.querySelectorAll(".modal-overlay, .modal").forEach(function(m) {
@@ -92,6 +92,23 @@
           <span class="search-icon">🔍</span>
           <input type="text" class="search-input" id="search-stock" placeholder="सामान का नाम खोजें (Search product)..." autocomplete="off">
           <button class="search-clear" id="clear-stock-search">✕</button>
+        </div>
+
+        <!-- Stock Filter & Sort Bar -->
+        <div class="filter-pills-row" style="margin-top:10px;">
+          <div class="filter-pills" id="stock-filter-pills">
+            <button type="button" class="filter-pill active" data-filter="all">सभी</button>
+            <button type="button" class="filter-pill" data-filter="low">⚠️ कम स्टॉक</button>
+            <button type="button" class="filter-pill" data-filter="expiry">⏳ एक्सपायरी (Soon)</button>
+            <button type="button" class="filter-pill" data-filter="available">उपलब्ध</button>
+            <button type="button" class="filter-pill" data-filter="out">खत्म</button>
+          </div>
+          <select class="sort-select" id="select-stock-sort">
+            <option value="name">अ-ह क्रम (A-Z)</option>
+            <option value="low-first">कम स्टॉक पहले</option>
+            <option value="high-first">ज़्यादा स्टॉक पहले</option>
+            <option value="recent">हाल ही में जोड़ा गया</option>
+          </select>
         </div>
 
         <div id="list-all-stock"></div>
@@ -282,15 +299,20 @@
       <span>सामान जोड़ें</span>
     </button>
 
-    <!-- Persistent Undo Toast Banner -->
+    <!-- Persistent Undo Toast Banner with Dismiss Button -->
     <div class="undo-toast" id="undo-toast">
-      <div style="display:flex; align-items:center; gap:8px;">
+      <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:0;">
         <span>✅</span>
-        <span id="undo-toast-text" style="font-size:0.85rem;">बिक्री दर्ज हुई!</span>
+        <span id="undo-toast-text" style="font-size:0.85rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">बिक्री दर्ज हुई!</span>
       </div>
-      <button class="undo-toast-btn" id="btn-toast-undo">
-        ↩️ पिछली बिक्री वापस करें
-      </button>
+      <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+        <button class="undo-toast-btn" id="btn-toast-undo">
+          ↩️ पिछली बिक्री वापस करें
+        </button>
+        <button type="button" class="undo-toast-close" id="btn-toast-dismiss" onclick="(window.dismissUndoSnackbar ? window.dismissUndoSnackbar() : document.getElementById('undo-toast').classList.remove('active','show')); return false;" aria-label="Dismiss">
+          ✕
+        </button>
+      </div>
     </div>
 
     <!-- Bottom Navigation Bar -->
@@ -512,7 +534,7 @@
   </div>
 
   <!-- Scripts -->
-  <script type="module" src="app.js?v=8"></script>
+  <script type="module" src="app.js?v=9"></script>
   <div class="toast-popup" id="toast"></div>
 </body>
 </html>

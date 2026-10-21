@@ -526,6 +526,7 @@ export async function loadDemoData() {
       unit: "L",
       minimumStock: 8,
       costPrice: 145,
+      expiryDate: futureDate(180),
       createdAt: daysAgo(50),
       lastSaleAt: daysAgo(0, 3) // 3 hours ago
     },
@@ -536,6 +537,7 @@ export async function loadDemoData() {
       unit: "pkt",
       minimumStock: 20,
       costPrice: 22,
+      expiryDate: futureDate(120),
       createdAt: daysAgo(60),
       lastSaleAt: daysAgo(1)
     },
@@ -546,6 +548,7 @@ export async function loadDemoData() {
       unit: "pkt",
       minimumStock: 6,
       costPrice: 130,
+      expiryDate: futureDate(540),
       createdAt: daysAgo(40),
       lastSaleAt: daysAgo(2)
     },
@@ -557,6 +560,7 @@ export async function loadDemoData() {
       unit: "pkt",
       minimumStock: 10,
       costPrice: 24,
+      expiryDate: futureDate(730),
       createdAt: daysAgo(90),
       lastSaleAt: daysAgo(0, 1)
     },
@@ -567,6 +571,7 @@ export async function loadDemoData() {
       unit: "pkt",
       minimumStock: 5,
       costPrice: 380,
+      expiryDate: futureDate(60),
       createdAt: daysAgo(45),
       lastSaleAt: daysAgo(0, 4)
     },
@@ -577,6 +582,7 @@ export async function loadDemoData() {
       unit: "pkt",
       minimumStock: 24,
       costPrice: 12,
+      expiryDate: futureDate(150),
       createdAt: daysAgo(60),
       lastSaleAt: daysAgo(0, 2)
     },
@@ -587,7 +593,7 @@ export async function loadDemoData() {
       unit: "pkt",
       minimumStock: 4,
       costPrice: 260,
-      expiryDate: new Date(Date.now() + 10 * 86400000).toISOString().split("T")[0],
+      expiryDate: futureDate(6), // ⚠️ Expiring in 6 days!
       createdAt: daysAgo(30),
       lastSaleAt: daysAgo(0, 5)
     },
@@ -598,7 +604,7 @@ export async function loadDemoData() {
       unit: "pc",
       minimumStock: 8,
       costPrice: 32,
-      expiryDate: new Date(Date.now() + 200 * 86400000).toISOString().split("T")[0],
+      expiryDate: futureDate(365),
       createdAt: daysAgo(50),
       lastSaleAt: daysAgo(1)
     },
@@ -609,6 +615,7 @@ export async function loadDemoData() {
       unit: "kg",
       minimumStock: 10,
       costPrice: 42,
+      expiryDate: futureDate(365),
       createdAt: daysAgo(40),
       lastSaleAt: daysAgo(1)
     },
@@ -619,6 +626,7 @@ export async function loadDemoData() {
       unit: "pkt",
       minimumStock: 5,
       costPrice: 140,
+      expiryDate: futureDate(240),
       createdAt: daysAgo(35),
       lastSaleAt: daysAgo(2)
     },
@@ -630,7 +638,7 @@ export async function loadDemoData() {
       unit: "pc",
       minimumStock: 4,
       costPrice: 98,
-      expiryDate: new Date(Date.now() + 18 * 86400000).toISOString().split("T")[0],
+      expiryDate: futureDate(16), // ⏳ Expiring in 16 days!
       createdAt: daysAgo(70),
       lastSaleAt: daysAgo(45) // Sold 45 days ago!
     },
@@ -641,6 +649,7 @@ export async function loadDemoData() {
       unit: "pkt",
       minimumStock: 5,
       costPrice: 75,
+      expiryDate: futureDate(22), // ⏳ Expiring in 22 days!
       createdAt: daysAgo(80),
       lastSaleAt: daysAgo(52) // Sold 52 days ago!
     },
@@ -651,6 +660,7 @@ export async function loadDemoData() {
       unit: "box",
       minimumStock: 5,
       costPrice: 38,
+      expiryDate: futureDate(400),
       createdAt: daysAgo(90),
       lastSaleAt: daysAgo(48) // Sold 48 days ago!
     },
@@ -661,6 +671,7 @@ export async function loadDemoData() {
       unit: "pc",
       minimumStock: 3,
       costPrice: 165,
+      expiryDate: pastDate(4), // ⚠️ Expired 4 days ago!
       createdAt: daysAgo(85),
       lastSaleAt: daysAgo(39) // Sold 39 days ago!
     },
@@ -672,6 +683,7 @@ export async function loadDemoData() {
       unit: "pkt",
       minimumStock: 5,
       costPrice: 30,
+      expiryDate: futureDate(28), // ⏳ Expiring in 28 days!
       createdAt: daysAgo(45),
       lastSaleAt: null // Never sold!
     }
