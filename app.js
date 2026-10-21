@@ -198,7 +198,7 @@ function cacheElements() {
   elements.searchStock = document.getElementById("search-stock");
   elements.listAllStock = document.getElementById("list-all-stock");
   elements.emptyAllStock = document.getElementById("empty-all-stock");
-  elements.btnFabAdd = document.getElementById("btn-fab-add");
+  elements.btnFabAdd = document.getElementById("btn-fab-add") || document.getElementById("fab-add-product");
   elements.badgeLowStock = document.getElementById("badge-low-stock");
 
   // View: Quick Sale
@@ -209,14 +209,14 @@ function cacheElements() {
   // View: Low Stock
   elements.listLowStock = document.getElementById("list-low-stock");
   elements.emptyLowStock = document.getElementById("empty-low-stock");
-  elements.btnShareOrder = document.getElementById("btn-share-order");
+  elements.btnShareOrder = document.getElementById("btn-share-order") || document.getElementById("btn-share-order-top");
 
   // View: Not Moving
   elements.listNotMoving = document.getElementById("list-not-moving");
   elements.emptyNotMoving = document.getElementById("empty-not-moving");
-  elements.bannerTiedUp = document.getElementById("banner-tied-up");
-  elements.txtTiedUpMoney = document.getElementById("txt-tied-up-money");
-  elements.txtTiedUpDetail = document.getElementById("txt-tied-up-detail");
+  elements.bannerTiedUp = document.getElementById("banner-tied-up") || document.getElementById("capital-summary-card");
+  elements.txtTiedUpMoney = document.getElementById("txt-tied-up-money") || document.getElementById("txt-capital-amount");
+  elements.txtTiedUpDetail = document.getElementById("txt-tied-up-detail") || document.getElementById("txt-capital-sub");
 
   // View: Settings
   elements.btnLoadDemo = document.getElementById("btn-load-demo");
@@ -248,18 +248,18 @@ function cacheElements() {
   elements.correctProdId = document.getElementById("correct-prod-id");
   elements.correctProdName = document.getElementById("correct-prod-name");
   elements.correctCurrentQty = document.getElementById("correct-current-qty");
-  elements.inpCorrectQty = document.getElementById("inp-correct-qty");
+  elements.inpCorrectQty = document.getElementById("inp-correct-qty") || document.getElementById("inp-correct-actual-qty");
   elements.selectCorrectReason = document.getElementById("select-correct-reason");
 
   elements.modalShare = document.getElementById("modal-share");
   elements.txtShareOrderContent = document.getElementById("txt-share-order-content");
-  elements.btnCopyOrder = document.getElementById("btn-copy-order");
+  elements.btnCopyOrder = document.getElementById("btn-copy-order") || document.getElementById("btn-copy-order-text");
   elements.btnSendWhatsapp = document.getElementById("btn-send-whatsapp");
 
   // Snackbars & Toasts
-  elements.undoSnackbar = document.getElementById("undo-snackbar");
-  elements.txtUndoMsg = document.getElementById("txt-undo-msg");
-  elements.btnUndoAction = document.getElementById("btn-undo-action");
+  elements.undoSnackbar = document.getElementById("undo-snackbar") || document.getElementById("undo-toast");
+  elements.txtUndoMsg = document.getElementById("txt-undo-msg") || document.getElementById("undo-toast-text");
+  elements.btnUndoAction = document.getElementById("btn-undo-action") || document.getElementById("btn-toast-undo");
   elements.toast = document.getElementById("toast");
 }
 
@@ -786,11 +786,15 @@ function showUndoSnackbar(product, movement) {
 
   if (undoTimer) clearTimeout(undoTimer);
 
-  elements.txtUndoMsg.textContent = `${product.name} की 1 ${product.unit} बिक्री दर्ज हुई`;
+  if (elements.txtUndoMsg) {
+    elements.txtUndoMsg.textContent = `${product.name} की 1 ${product.unit} बिक्री दर्ज हुई!`;
+  }
   elements.undoSnackbar.classList.add("active");
+  elements.undoSnackbar.classList.add("show");
 
   undoTimer = setTimeout(() => {
     elements.undoSnackbar.classList.remove("active");
+    elements.undoSnackbar.classList.remove("show");
   }, 9000);
 }
 
@@ -1236,10 +1240,34 @@ function setupEventListeners() {
     });
   }
 
-  // Close modals on click overlay or close buttons
-  document.querySelectorAll(".modal-close, .modal-overlay").forEach((el) => {
+  // Close modals on close button or click overlay
+  document.querySelectorAll(".modal-close, [data-close-modal]").forEach((el) => {
     el.addEventListener("click", closeAllModals);
   });
+  document.querySelectorAll(".modal-overlay").forEach((el) => {
+    el.addEventListener("click", (e) => {
+      if (e.target === el) closeAllModals();
+    });
+  });
+
+  // Stepper buttons for restock modal
+  const btnRestockPlus = document.getElementById("btn-restock-plus");
+  const btnRestockMinus = document.getElementById("btn-restock-minus");
+  if (btnRestockPlus) {
+    btnRestockPlus.addEventListener("click", () => {
+      if (elements.inpRestockQty) {
+        elements.inpRestockQty.value = (parseFloat(elements.inpRestockQty.value || 0) + 1).toString();
+      }
+    });
+  }
+  if (btnRestockMinus) {
+    btnRestockMinus.addEventListener("click", () => {
+      if (elements.inpRestockQty) {
+        const v = Math.max(1, parseFloat(elements.inpRestockQty.value || 0) - 1);
+        elements.inpRestockQty.value = v.toString();
+      }
+    });
+  }
 }
 
 // --- LANGUAGE SWITCHER UI ---
