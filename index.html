@@ -307,6 +307,22 @@
         </div>
 
         <form id="form-add-product" autocomplete="off">
+          <!-- Quick Starter Chips (Section 10: Fast Onboarding) -->
+          <div class="form-group" style="margin-bottom: 8px;">
+            <label class="form-label" style="font-size:0.75rem; color:var(--text-secondary);">
+              ⚡ त्वरित सुझाव (Tap to auto-fill common Kirana items):
+            </label>
+            <div class="quick-starter-chips" id="quick-starter-chips">
+              <button type="button" class="starter-chip" data-name="टाटा नमक 1kg (Tata Salt)" data-unit="pkt" data-min="10" data-cost="24">टाटा नमक</button>
+              <button type="button" class="starter-chip" data-name="फॉर्च्यून सरसों तेल 1L (Fortune Oil)" data-unit="L" data-min="6" data-cost="145">फॉर्च्यून तेल</button>
+              <button type="button" class="starter-chip" data-name="मधुर चीनी 1kg (Sugar)" data-unit="kg" data-min="10" data-cost="42">चीनी (Sugar)</button>
+              <button type="button" class="starter-chip" data-name="आशीर्वाद आटा 10kg (Aashirvaad Atta)" data-unit="pkt" data-min="5" data-cost="380">आशीर्वाद आटा</button>
+              <button type="button" class="starter-chip" data-name="मैगी नूडल्स 70g (Maggi)" data-unit="pkt" data-min="20" data-cost="12">मैगी (Maggi)</button>
+              <button type="button" class="starter-chip" data-name="पारले-जी बिस्कुट 250g (Parle-G)" data-unit="pkt" data-min="24" data-cost="22">पारले-जी</button>
+              <button type="button" class="starter-chip" data-name="डेटॉल साबुन 75g (Dettol Soap)" data-unit="pc" data-min="8" data-cost="32">डेटॉल साबुन</button>
+              <button type="button" class="starter-chip" data-name="अरहर दाल 1kg (Toor Dal)" data-unit="kg" data-min="6" data-cost="135">अरहर दाल</button>
+            </div>
+          </div>
           <div class="form-group">
             <label class="form-label">सामान का नाम (Product Name) *</label>
             <input type="text" class="form-input" id="inp-add-name" placeholder="उदा. टाटा नमक 1kg या फॉर्च्यून तेल 1L" required>

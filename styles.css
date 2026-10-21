@@ -988,3 +988,34 @@ body.expanded-mode .undo-toast {
   outline: none;
   cursor: pointer;
 }
+
+/* Quick Starter Chips */
+.quick-starter-chips {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 0 8px 0;
+  scrollbar-width: none;
+}
+.quick-starter-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.starter-chip {
+  background: #f1f8f4;
+  border: 1px dashed var(--primary);
+  color: var(--primary);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--transition-fast);
+}
+
+.starter-chip:hover, .starter-chip:active {
+  background: var(--primary);
+  color: #ffffff;
+  border-style: solid;
+}

@@ -964,6 +964,24 @@ function setupEventListeners() {
     elements.btnFabAdd.addEventListener("click", openAddModal);
   }
 
+  // Quick starter chips in Add Product modal
+  document.querySelectorAll(".starter-chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      if (elements.inpAddName) elements.inpAddName.value = chip.dataset.name;
+      if (elements.inpAddMin) elements.inpAddMin.value = chip.dataset.min;
+      if (elements.inpAddCost) elements.inpAddCost.value = chip.dataset.cost;
+      if (elements.inpAddQty && !elements.inpAddQty.value) elements.inpAddQty.value = "10";
+      
+      const targetUnit = chip.dataset.unit;
+      if (elements.inpAddUnit) elements.inpAddUnit.value = targetUnit;
+      elements.unitPillsAdd.forEach((p) => {
+        p.classList.toggle("active", p.dataset.unit === targetUnit);
+      });
+      if (elements.inpAddQty) elements.inpAddQty.focus();
+    });
+  });
+
+
   // Unit pills in Add modal
   elements.unitPillsAdd.forEach((pill) => {
     pill.addEventListener("click", () => {
