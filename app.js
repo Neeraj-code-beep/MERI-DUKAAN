@@ -30,6 +30,8 @@ let inactivityDays = 30;
 let lastSaleMovement = null;
 let undoTimer = null;
 let isProcessingSale = false;
+let currentStockFilter = "all";
+let currentStockSort = "name";
 
 // --- TRANSLATIONS (Hindi / English) ---
 const I18N = {
@@ -111,6 +113,58 @@ const I18N = {
 
 function t(key) {
   return (I18N[currentLang] && I18N[currentLang][key]) || (I18N["en"] && I18N["en"][key]) || key;
+}
+
+
+// --- HINGLISH & TRANSLITERATED SEARCH DICTIONARY ---
+const HINGLISH_MAP = {
+  namak: ["नमक", "salt"],
+  chini: ["चीनी", "sugar"],
+  cheeni: ["चीनी", "sugar"],
+  tel: ["तेल", "oil"],
+  tail: ["तेल", "oil"],
+  sarson: ["सरसों", "mustard"],
+  atta: ["आटा", "flour"],
+  dal: ["दाल", "pulses", "toor", "chana"],
+  daal: ["दाल", "pulses", "toor", "chana"],
+  chawal: ["चावल", "rice"],
+  biscuit: ["बिस्कुट", "cookie", "parle"],
+  biskut: ["बिस्कुट", "cookie", "parle"],
+  chai: ["चाय", "tea", "gold"],
+  patti: ["पत्ती", "tea"],
+  doodh: ["दूध", "milk"],
+  makhan: ["मक्खन", "butter", "amul"],
+  ghee: ["घी"],
+  sabun: ["साबुन", "soap", "dettol"],
+  detergent: ["सर्फ", "surf", "वॉश"],
+  surf: ["सर्फ", "detergent", "excel"],
+  cleaner: ["क्लीनर", "lizol", "floor"],
+  masala: ["मसाला", "spices", "garam", "everest"],
+  mirch: ["मिर्च", "chilli"],
+  haldi: ["हल्दी", "turmeric"],
+  dhaniya: ["धनिया", "coriander"],
+  maggi: ["मैगी", "noodles"],
+  noodle: ["मैगी", "नूडल्स"],
+  coil: ["मॉर्टिन", "coil", "कछुआ", "mortein"],
+  sharbat: ["शरबत", "rooh", "afza"]
+};
+
+function matchesSearchQuery(productName, query) {
+  if (!query) return true;
+  const lowerName = productName.toLowerCase();
+  const lowerQ = query.trim().toLowerCase();
+
+  if (lowerName.includes(lowerQ)) return true;
+
+  const tokens = lowerQ.split(/\s+/);
+  return tokens.every((token) => {
+    if (lowerName.includes(token)) return true;
+    const synonyms = HINGLISH_MAP[token];
+    if (synonyms) {
+      return synonyms.some((syn) => lowerName.includes(syn.toLowerCase()));
+    }
+    return false;
+  });
 }
 
 function escapeHTML(str) {
@@ -258,8 +312,35 @@ async function refreshAllViews() {
 function renderStockList(products) {
   if (!elements.listAllStock) return;
 
-  const query = (elements.searchStock ? elements.searchStock.value : "").trim().toLowerCase();
-  const filtered = products.filter((p) => p.name.toLowerCase().includes(query));
+  const query = (elements.searchStock ? elements.searchStock.value : "").trim();
+  let filtered = products.filter((p) => matchesSearchQuery(p.name, query));
+
+  // Apply category pill filter
+  if (currentStockFilter === "low") {
+    filtered = filtered.filter((p) => p.quantity <= p.minimumStock);
+  } else if (currentStockFilter === "available") {
+    filtered = filtered.filter((p) => p.quantity > p.minimumStock);
+  } else if (currentStockFilter === "out") {
+    filtered = filtered.filter((p) => p.quantity <= 0);
+  }
+
+  // Apply sorting
+  if (currentStockSort === "name") {
+    filtered.sort((a, b) => a.name.localeCompare(b.name, "hi"));
+  } else if (currentStockSort === "low-first") {
+    filtered.sort((a, b) => a.quantity - b.quantity);
+  } else if (currentStockSort === "high-first") {
+    filtered.sort((a, b) => b.quantity - a.quantity);
+  } else if (currentStockSort === "recent") {
+    filtered.sort((a, b) => {
+      const timeA = a.lastSaleAt ? new Date(a.lastSaleAt).getTime() : 0;
+      const timeB = b.lastSaleAt ? new Date(b.lastSaleAt).getTime() : 0;
+      return timeB - timeA;
+    });
+  }
+
+  const countEl = document.getElementById("count-all-stock");
+  if (countEl) countEl.textContent = filtered.length + " सामान";
 
   if (filtered.length === 0) {
     elements.listAllStock.innerHTML = "";
@@ -842,6 +923,27 @@ function setupEventListeners() {
       switchView(tab.dataset.view);
     });
   });
+
+  // Stock filter pills
+  document.querySelectorAll("#stock-filter-pills .filter-pill").forEach((pill) => {
+    pill.addEventListener("click", async () => {
+      document.querySelectorAll("#stock-filter-pills .filter-pill").forEach((p) => p.classList.remove("active"));
+      pill.classList.add("active");
+      currentStockFilter = pill.dataset.filter;
+      const products = await getAllProducts();
+      renderStockList(products);
+    });
+  });
+
+  // Stock sort select
+  const selectSort = document.getElementById("select-stock-sort");
+  if (selectSort) {
+    selectSort.addEventListener("change", async (e) => {
+      currentStockSort = e.target.value;
+      const products = await getAllProducts();
+      renderStockList(products);
+    });
+  }
 
   // Search filters
   if (elements.searchStock) {
