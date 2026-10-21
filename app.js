@@ -15,7 +15,8 @@ import {
   getAllMovements,
   getLowStockProducts,
   getNotMovingProducts,
-  calculateTiedUpCapital,\n  getExpiringProducts,
+  calculateTiedUpCapital,
+  getExpiringProducts,
   getSetting,
   setSetting,
   loadDemoData,
@@ -233,7 +234,8 @@ function cacheElements() {
   elements.inpAddQty = document.getElementById("inp-add-qty");
   elements.inpAddUnit = document.getElementById("inp-add-unit");
   elements.inpAddMin = document.getElementById("inp-add-min");
-  elements.inpAddCost = document.getElementById("inp-add-cost");\n  elements.inpAddExpiry = document.getElementById("inp-add-expiry");
+  elements.inpAddCost = document.getElementById("inp-add-cost");
+  elements.inpAddExpiry = document.getElementById("inp-add-expiry");
   elements.unitPillsAdd = document.querySelectorAll("#unit-pills-add .pill");
 
   elements.modalRestock = document.getElementById("modal-restock");
@@ -834,6 +836,13 @@ function closeAllModals() {
 
 function openAddModal() {
   closeAllModals();
+  const modal = document.getElementById("modal-add-product");
+  if (modal) {
+    modal.classList.add("active");
+    modal.classList.add("open");
+    modal.style.display = "flex";
+  }
+  closeAllModals();
   if (elements.formAddProduct) elements.formAddProduct.reset();
   // Select default unit (pkt)
   elements.unitPillsAdd.forEach((p) => p.classList.remove("active"));
@@ -907,7 +916,9 @@ async function generateShareOrderList() {
     btnNative.style.display = navigator.share ? "block" : "none";
   }
 
-  elements.modalShare.classList.add("active");\n  elements.modalShare.classList.add("open");\n  elements.modalShare.style.display = "flex";
+  elements.modalShare.classList.add("active");
+  elements.modalShare.classList.add("open");
+  elements.modalShare.style.display = "flex";
 }
 
 async function shareViaWhatsApp() {
@@ -1375,3 +1386,4 @@ if (document.readyState === "loading") {
 } else {
   init();
 }
+window.openAddModal = openAddModal;
