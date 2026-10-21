@@ -535,7 +535,7 @@ function openAddModal() {
   if (elements.formAddProduct) elements.formAddProduct.reset();
   // Select default unit (pkt)
   elements.unitPillsAdd.forEach((p) => p.classList.remove("active"));
-  const defaultPill = document.querySelector("#unit-pills-add [data-unit="pkt"]");
+  const defaultPill = document.querySelector("#unit-pills-add [data-unit='pkt']");
   if (defaultPill) defaultPill.classList.add("active");
   if (elements.inpAddUnit) elements.inpAddUnit.value = "pkt";
 
